@@ -9,10 +9,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.sharp.AccountCircle
+import androidx.compose.material.icons.sharp.Call
+import androidx.compose.material.icons.sharp.Email
+import androidx.compose.material.icons.sharp.MailOutline
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -20,15 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.project.ui.theme.ProjectTheme
 
-// https://developer.android.com/codelabs/basic-android-kotlin-compose-composables-practice-problems?continue=https://developer.android.com/courses/pathways/android-basics-compose-unit-1-pathway-3%23codelab-https://developer.android.com/codelabs/basic-android-kotlin-compose-composables-practice-problems#3
+//https://developer.android.com/codelabs/basic-android-kotlin-compose-business-card?continue=https://developer.android.com/courses/pathways/android-basics-compose-unit-1-pathway-3%23codelab-https://developer.android.com/codelabs/basic-android-kotlin-compose-business-card#1
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,79 +41,88 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.primary
                 ) {
-                    Quadrant()
+                    BusinessCard()
                 }
             }
         }
     }
 
+
+
     @Composable
-    fun Quadrant() {
-        Column {
+    fun BusinessCard() {
+            Column(
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.DarkGray),
+            ) {
+                NamedHeader(fullName = "Chris Jones", title = "Web Developer")
+                ContactInfo(
+                    number = "+0(00)-000-000",
+                    userId = "@socialmediaHandle",
+                    email = "email@domain.com"
+                )
+            }
+    }
 
-            Row(
-                modifier = Modifier.weight(0.5f)
-            ) {
-                TextBlock(
-                    title = "Text composable",
-                    message = "Displays text and follows the recommended Material Design guidelines.",
-                    color = Color(0xFFEADDFF),
-                    modifier = Modifier.weight(0.5f)
-                )
-                TextBlock(
-                    title = "Image composable",
-                    message = "Creates a composable that lays out and draws a given Painter class object.",
-                    color = Color(0xFFD0BCFF),
-                    modifier = Modifier.weight(0.5f)
-                )
-            }
-            Row(
-                modifier = Modifier.weight(0.5f)
-            ) {
-                TextBlock(
-                    title = "Row composable",
-                    message = "A layout composable that places its children in a horizontal sequence.",
-                    color = Color(0xFFB69DF8),
-                    modifier = Modifier.weight(0.5f)
-                )
-                TextBlock(
-                    title = "Column composable",
-                    message = "A layout composable that places its children in a vertical sequence.",
-                    color = Color(0xFFF6EDFF),
-                    modifier = Modifier.weight(0.5f)
-                )
-            }
+    @Composable
+    fun NamedHeader(
+        fullName: String,
+        title: String
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(top = 40.dp)
+
+        ) {
+            Icon(
+                imageVector = Icons.Sharp.MailOutline,
+                contentDescription = null,
+                modifier = Modifier.size(150.dp)
+            )
+            Text(
+                text = fullName,
+                fontSize = 30.sp
+            )
+            Text(
+                text = title,
+                fontSize = 12.sp
+            )
         }
-
 
     }
 
     @Composable
-    fun TextBlock(
-        title: String,
-        message: String,
-        color: Color,
-        modifier: Modifier
+    fun ContactInfo(
+        number: String,
+        userId: String,
+        email: String
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = modifier
-                .background(color)
-                .padding(16.dp)
-                .fillMaxHeight()
-        ) {
-            Text(
-                text = title,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-            Text(
-                text = message,
-                textAlign = TextAlign.Justify,
-                fontSize = 14.sp
-            )
+        Column {
+            ContactInfoRow(Icons.Sharp.Call, number)
+            ContactInfoRow(Icons.Sharp.AccountCircle, userId)
+            ContactInfoRow(Icons.Sharp.Email, email)
+        }
+    }
 
+    @Composable
+    fun ContactInfoRow(
+        imageVector: ImageVector,
+        content: String
+    ) {
+        Row(
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
+            Icon(
+                imageVector = imageVector,
+                contentDescription = null,
+                modifier = Modifier.padding(horizontal = 12.dp)
+            )
+            Text(
+                text = content
+            )
         }
     }
 
@@ -119,7 +131,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun Preview() {
         ProjectTheme {
-            Quadrant()
+            BusinessCard()
         }
     }
 }
