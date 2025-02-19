@@ -1,18 +1,17 @@
 package com.example.project
 
 
-import android.graphics.Paint.Align
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -21,9 +20,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.project.ui.theme.ProjectTheme
@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.primary
                 ) {
-
+                    Quadrant()
                 }
             }
         }
@@ -46,48 +46,77 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun Quadrant() {
-        Row(
-            horizontalArrangement = Arrangement.Absolute.SpaceBetween
-        ) {
-            TextBlock(
-                title = "Text composable",
-                message = "Displays text and follows the recommended Material Design guidelines.",
-                color = Color(0xFFEADDFF)
-            )
-            TextBlock(
-                title = "Image composable",
-                message = "Creates a composable that lays out and draws a given Painter class object.",
-                color = Color(0xFFD0BCFF)
-            )
+        Column {
+
+            Row(
+                modifier = Modifier.weight(0.5f)
+            ) {
+                TextBlock(
+                    title = "Text composable",
+                    message = "Displays text and follows the recommended Material Design guidelines.",
+                    color = Color(0xFFEADDFF),
+                    modifier = Modifier.weight(0.5f)
+                )
+                TextBlock(
+                    title = "Image composable",
+                    message = "Creates a composable that lays out and draws a given Painter class object.",
+                    color = Color(0xFFD0BCFF),
+                    modifier = Modifier.weight(0.5f)
+                )
+            }
+            Row(
+                modifier = Modifier.weight(0.5f)
+            ) {
+                TextBlock(
+                    title = "Row composable",
+                    message = "A layout composable that places its children in a horizontal sequence.",
+                    color = Color(0xFFB69DF8),
+                    modifier = Modifier.weight(0.5f)
+                )
+                TextBlock(
+                    title = "Column composable",
+                    message = "A layout composable that places its children in a vertical sequence.",
+                    color = Color(0xFFF6EDFF),
+                    modifier = Modifier.weight(0.5f)
+                )
+            }
         }
+
+
     }
 
     @Composable
     fun TextBlock(
         title: String,
         message: String,
-        color: Color
+        color: Color,
+        modifier: Modifier
     ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                        modifier = Modifier.background(color).padding(16.dp)
-
-            ) {
-                Text(
-                    text = title,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = message
-                )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = modifier
+                .background(color)
+                .padding(16.dp)
+                .fillMaxHeight()
+        ) {
+            Text(
+                text = title,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            Text(
+                text = message,
+                textAlign = TextAlign.Justify,
+                fontSize = 14.sp
+            )
 
         }
     }
 
 
-@Preview(showBackground = true)
-@Composable
+    @Preview(showBackground = true)
+    @Composable
     fun Preview() {
         ProjectTheme {
             Quadrant()
