@@ -13,7 +13,7 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface RecipesApiService {
-    @GET("/recipes/")
+    @GET("/recipes?limit=0")
    suspend fun getRecipes(): RecipeAnswer
 }
 

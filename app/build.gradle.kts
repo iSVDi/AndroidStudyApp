@@ -53,6 +53,8 @@ dependencies {
     implementation(libs.retrofit)
 // Retrofit with Gson Converter
     implementation(libs.retrofit2.converter.gson)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
