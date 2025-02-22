@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="usersData">
+         <item>AuroraNova,G3n3r@t1v3P@$$</item>
+         <item>CyberWanderer,D@t@Str3@m</item>
+         <item>PixelVoyager,V1rtu@lR3@l1ty</item>
+         <item>CodeAlchemist,@lg0r1thm1c</item>
+         <item>QuantumDreamer,3ncrypt10nK3</item>
+    </string-array>
+</resources>

@@ -22,6 +22,7 @@ class RecipesViewModel : ViewModel() {
     }
 
 
+
     fun getRecipes(): List<RecipeCell> {
         return List(20) { index ->
             RecipeCell(
