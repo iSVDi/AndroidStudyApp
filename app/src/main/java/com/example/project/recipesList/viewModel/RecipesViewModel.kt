@@ -24,8 +24,8 @@ class RecipesViewModel : ViewModel() {
             val recipeCellList = recipeResult.recipes.map {
                 val difficultyColor =
                     when(it.difficulty) {
-                        "Easy" -> Color.Green
-                        "Medium" -> Color.Red
+                        "Easy" -> Color(61, 142,74, 255)
+                        "Medium" -> Color(222, 142,74, 255)
                         else -> Color.Cyan
                     }
                 RecipeCell(
@@ -33,7 +33,7 @@ class RecipesViewModel : ViewModel() {
                     imageUrl = it.image,
                     title = it.name,
                     difficulty = it.difficulty,
-                    difficultyColor = difficultyColor.copy(alpha = 0.6f),
+                    difficultyColor = difficultyColor,
                     tags = it.tags,
                 )
             }
