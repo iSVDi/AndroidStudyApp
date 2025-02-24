@@ -24,6 +24,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,11 +36,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.project.R
+import com.example.project.dataBase.RecipeDataBase
 import com.example.project.recipesList.RecipesListActivity
 import com.example.project.ui.theme.ProjectTheme
 
 class AuthActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -74,16 +78,14 @@ class AuthActivity : ComponentActivity() {
                 modifier = Modifier.size(240.dp)
             )
 
-            TextField(value = userName,
-                onValueChange = { userName = it }, label = {
-                    Text("User name")
-                }, modifier = Modifier.padding(bottom = 10.dp)
+            TextField(value = userName, onValueChange = { userName = it }, label = {
+                Text("User name")
+            }, modifier = Modifier.padding(bottom = 10.dp)
             )
 
-            TextField(value = password,
-                onValueChange = { password = it }, label = {
-                    Text("Password")
-                }, modifier = Modifier.padding(bottom = 12.dp)
+            TextField(value = password, onValueChange = { password = it }, label = {
+                Text("Password")
+            }, modifier = Modifier.padding(bottom = 12.dp)
             )
 
             LoginButton(userName, password)
@@ -92,22 +94,26 @@ class AuthActivity : ComponentActivity() {
     }
 
     @Composable
-    fun LoginButton(userName: String, password: String) {
-
+    fun LoginButton(
+        userName: String, password: String,
+        authViewModel: AuthViewModel = viewModel(factory = AuthViewModel.factory)
+    ) {
+        val users = authViewModel.usersList.collectAsState(initial = emptyList())
         val shouldPresentAlert = remember { mutableStateOf(false) }
+        val db = RecipeDataBase.createDataBase(context = this@AuthActivity)
         Button(onClick = {
             val userData = "$userName,$password"
-            if (resources.getStringArray(R.array.usersData).contains(userData)) {
+            if (users.value.find {
+                    it.userName == userData && it.password == password
+                } != null) {
                 val navigate = Intent(
-                    this@AuthActivity,
-                    RecipesListActivity::class.java
+                    this@AuthActivity, RecipesListActivity::class.java
                 )
                 startActivity(navigate)
             } else {
                 shouldPresentAlert.value = true
             }
-        }
-        ) {
+        }) {
             Text("Login")
         }
         when {
@@ -125,23 +131,17 @@ class AuthActivity : ComponentActivity() {
                 .fillMaxSize()
                 .background(Color.Black.copy(0.5f))
         ) {
-            AlertDialog(
-                icon = {
-                    Icon(imageVector = Icons.Rounded.Warning, contentDescription = null)
-                },
-                title = {
-                    Text(text = "Login failed")
-                },
-                text = {
-                    Text(text = "User with such userName and password not found")
-                },
-                onDismissRequest = {},
-                confirmButton = {
-                    TextButton(onClick = {
-                        state.value = false
-                    }
-                    ) { Text("Ok") }
-                }
+            AlertDialog(icon = {
+                Icon(imageVector = Icons.Rounded.Warning, contentDescription = null)
+            }, title = {
+                Text(text = "Login failed")
+            }, text = {
+                Text(text = "User with such userName and password not found")
+            }, onDismissRequest = {}, confirmButton = {
+                TextButton(onClick = {
+                    state.value = false
+                }) { Text("Ok") }
+            }
 
             )
         }
