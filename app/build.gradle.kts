@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -16,7 +16,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnit `Runner"
     }
 
     buildTypes {
@@ -29,11 +29,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_18
+        targetCompatibility = JavaVersion.VERSION_18
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "18"
     }
     buildFeatures {
         compose = true
@@ -58,13 +58,17 @@ dependencies {
     implementation(libs.coil.network.okhttp)
 
     //Room
-    implementation(libs.androidx.room.runtime)
-    annotationProcessor(libs.androidx.room.compiler)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.room.ktx)
-    implementation(libs.androidx.room.common)
-    implementation(libs.androidx.lifecycle.runtime.ktx.v287)
-    ksp(libs.room.compiler)
+//    implementation(libs.androidx.room.runtime)
+//    annotationProcessor(libs.androidx.room.compiler)
+//    implementation(libs.androidx.lifecycle.viewmodel.compose)
+//    implementation(libs.room.ktx)
+//    implementation(libs.androidx.room.common)
+//    implementation(libs.androidx.lifecycle.runtime.ktx.v287)
+//    kapt(libs.artifactid)
+    implementation("androidx.room:room-runtime:2.5.2")
+    implementation("androidx.room:room-ktx:2.5.2")
+    ksp("androidx.room:room-compiler:2.5.2")
+    
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
