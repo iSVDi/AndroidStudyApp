@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.project.common.dataBase.UserDataEntity
-import com.example.project.common.dataBase.UserDataDao
+import com.example.project.common.dataBase.user.UserDataEntity
+import com.example.project.common.dataBase.user.UserDataDao
 import kotlinx.coroutines.launch
 
 

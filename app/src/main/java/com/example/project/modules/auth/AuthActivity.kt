@@ -46,7 +46,7 @@ import com.example.project.common.SharedPreferencesHelper
 import com.example.project.modules.recipesList.RecipesListActivity
 import com.example.project.ui.theme.ProjectTheme
 
-@Suppress("UNCHECKED_CAST")
+
 class AuthActivity : ComponentActivity() {
 
     private val db by lazy {
@@ -57,6 +57,7 @@ class AuthActivity : ComponentActivity() {
         ).build()
     }
 
+    @Suppress("UNCHECKED_CAST")
     private val viewModel by viewModels<AuthViewModel>(
         factoryProducer = {
             object : ViewModelProvider.Factory {

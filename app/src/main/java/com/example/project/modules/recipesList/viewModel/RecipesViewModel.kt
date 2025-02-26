@@ -1,44 +1,48 @@
 package com.example.project.modules.recipesList.viewModel
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.project.modules.recipesList.models.RecipeCell
+import com.example.project.common.dataBase.recipe.RecipeDAO
+import com.example.project.common.network.Recipe
 import com.example.project.common.network.RecipesApi
 import kotlinx.coroutines.launch
 
-class RecipesViewModel : ViewModel() {
+class RecipesViewModel(private val recipeDAO: RecipeDAO) : ViewModel() {
     private val retrofit = RecipesApi.retrofitService
     val _state = mutableStateOf<RecipesViewState>(RecipesViewState.Loading)
 
-    init {
-        fetchRecipes()
-    }
-
-    private fun fetchRecipes() {
+    fun onCreate() {
         viewModelScope.launch {
-            val recipeResult = retrofit.getRecipes()
-            
-            val recipeCellList = recipeResult.recipes.map {
-                val difficultyColor =
-                    when(it.difficulty) {
-                        "Easy" -> Color(61, 142,74, 255)
-                        "Medium" -> Color(222, 142,74, 255)
-                        else -> Color.Cyan
-                    }
-                RecipeCell(
-                    id = it.id,
-                    imageUrl = it.image,
-                    title = it.name,
-                    difficulty = it.difficulty,
-                    difficultyColor = difficultyColor,
-                    tags = it.tags,
-                )
+            if (recipeDAO.getAllRecipes().isEmpty()) {
+                fetchRecipesFromAPI()
+            } else {
+                fetchRecipesFromDB()
             }
-            _state.value = RecipesViewState.Success(recipeCellList)
         }
     }
 
+    private suspend fun fetchRecipesFromAPI() {
+        val recipeResult = retrofit.getRecipes()
+
+        saveRecipeToDB(recipeResult.recipes)
+        val recipeCellList = recipeResult.recipes.map {
+            it.mapToRecipeCell()
+        }
+        _state.value = RecipesViewState.RecipesFetched(recipeCellList)
+    }
+
+    private suspend fun fetchRecipesFromDB() {
+        val recipesCell = recipeDAO.getAllRecipes().map { it.mapToRecipeCell() }
+        _state.value = RecipesViewState.RecipesFetched(recipesCell)
+    }
+
+    private suspend fun saveRecipeToDB(recipes: List<Recipe>) {
+        recipeDAO.deleteAllRecipes()
+        val recipeEntities = recipes.map { it.mapToRecipeEntity() }
+        recipeEntities.forEach {
+            recipeDAO.insert(it)
+        }
+    }
 
 }

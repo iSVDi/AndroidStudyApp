@@ -5,12 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -24,24 +22,47 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
 import coil3.compose.AsyncImage
+import com.example.project.common.dataBase.RecipeAppDatabase
+import com.example.project.modules.auth.viewModel.AuthViewModel
 import com.example.project.modules.recipesList.models.RecipeCell
 import com.example.project.modules.recipesList.viewModel.RecipesViewModel
 import com.example.project.modules.recipesList.viewModel.RecipesViewState
 import com.example.project.ui.theme.ProjectTheme
 
+
 class RecipesListActivity : ComponentActivity() {
-    private val viewModel: RecipesViewModel by viewModels()
+    private val db by lazy {
+        Room.databaseBuilder(
+            applicationContext,
+            RecipeAppDatabase::class.java,
+            "RecipeAppDatabase"
+        ).build()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private val viewModel by viewModels<RecipesViewModel>(
+        factoryProducer = {
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return RecipesViewModel(db.recipeDao) as T
+                }
+            }
+        }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        viewModel.onCreate()
         setContent {
             MainComposable()
         }
@@ -58,8 +79,8 @@ class RecipesListActivity : ComponentActivity() {
             )
             { paddings ->
                 when (viewModel._state.value) {
-                    is RecipesViewState.Success -> RecipesScroll(modifier = Modifier.padding(paddings))
                     is RecipesViewState.Loading -> Loading()
+                    is RecipesViewState.RecipesFetched -> RecipesScroll(modifier = Modifier.padding(paddings))
                 }
             }
         }
@@ -82,7 +103,7 @@ class RecipesListActivity : ComponentActivity() {
 
     @Composable
     fun RecipesScroll(modifier: Modifier) {
-        val recipes = (viewModel._state.value as RecipesViewState.Success).recipes
+        val recipes = (viewModel._state.value as RecipesViewState.RecipesFetched).recipes
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = modifier
