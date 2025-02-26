@@ -1,16 +1,21 @@
 package com.example.project.modules.recipesList
 
+import android.content.Intent
+import android.gesture.Gesture
+import androidx.navigation.compose.NavHost
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,10 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.navArgs
 import androidx.room.Room
 import coil3.compose.AsyncImage
 import com.example.project.common.dataBase.RecipeAppDatabase
 import com.example.project.modules.auth.viewModel.AuthViewModel
+import com.example.project.modules.recipeDetails.RecipeDetailsActivity
 import com.example.project.modules.recipesList.models.RecipeCell
 import com.example.project.modules.recipesList.viewModel.RecipesViewModel
 import com.example.project.modules.recipesList.viewModel.RecipesViewState
@@ -71,16 +78,19 @@ class RecipesListActivity : ComponentActivity() {
     @Composable
     fun MainComposable() {
         ProjectTheme {
-
             Scaffold(
                 topBar = {
-                    Text("Top bar", modifier = Modifier.padding(top = 20.dp))
+                    Text("", modifier = Modifier.padding(top = 20.dp))
                 }
             )
             { paddings ->
                 when (viewModel._state.value) {
                     is RecipesViewState.Loading -> Loading()
-                    is RecipesViewState.RecipesFetched -> RecipesScroll(modifier = Modifier.padding(paddings))
+                    is RecipesViewState.RecipesFetched -> RecipesScroll(
+                        modifier = Modifier.padding(
+                            paddings
+                        )
+                    )
                 }
             }
         }
@@ -108,7 +118,6 @@ class RecipesListActivity : ComponentActivity() {
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = modifier
                 .padding(horizontal = 10.dp)
-
         ) {
             items(recipes) { recipe ->
                 RecipeCellComposable(recipe = recipe, modifier = Modifier)
@@ -118,13 +127,22 @@ class RecipesListActivity : ComponentActivity() {
 
     @Composable
     fun RecipeCellComposable(recipe: RecipeCell, modifier: Modifier) {
-        Card(modifier = modifier) {
+        Card(modifier = modifier
+            .clickable {
+                val navigate = Intent(
+                    this@RecipesListActivity, RecipeDetailsActivity::class.java
+                )
+                navigate.putExtra("recipeId", recipe.id)
+                startActivity(navigate)
+            }
+        ) {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 AsyncImage(
                     recipe.imageUrl,
                     contentDescription = null,
                     modifier = modifier
                         .weight(1f)
+                        .size(130.dp)
                 )
                 Column(
                     modifier = modifier.weight(2f)
