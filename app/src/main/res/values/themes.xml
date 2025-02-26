@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Project" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Project" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Customize the splash screen background -->
+        <item name="windowSplashScreenBackground">@drawable/ic_launcher_background</item>
+
+        <!-- Customize the splash screen icon (optional) -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenAnimationDuration">500</item> <!-- Duration in milliseconds -->
+
+        <!-- Post-splash screen theme (e.g., your app's main theme) -->
+        <item name="postSplashScreenTheme">@style/Theme.Project</item>
+    </style>
+
 </resources>

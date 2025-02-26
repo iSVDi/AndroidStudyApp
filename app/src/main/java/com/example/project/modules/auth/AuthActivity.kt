@@ -1,6 +1,7 @@
 package com.example.project.modules.auth
 
 import android.content.Intent
+import android.content.res.Resources.Theme
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,11 +20,13 @@ import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +48,7 @@ import com.example.project.common.dataBase.RecipeAppDatabase
 import com.example.project.common.SharedPreferencesHelper
 import com.example.project.modules.recipesList.RecipesListActivity
 import com.example.project.ui.theme.ProjectTheme
+import kotlinx.coroutines.delay
 
 
 class AuthActivity : ComponentActivity() {
@@ -73,7 +77,47 @@ class AuthActivity : ComponentActivity() {
         enableEdgeToEdge()
         viewModel.onCreateHandle()
         setContent {
-            Content(Modifier.fillMaxSize())
+            SplashScreenApp {
+                Content(Modifier.fillMaxSize())
+            }
+        }
+    }
+
+    @Composable
+    fun SplashScreenApp(content: @Composable () -> Unit) {
+        var showSplash by remember { mutableStateOf(true) }
+
+        // Handle splash screen visibility
+        LaunchedEffect(Unit) {
+            delay(2000) // Display splash screen for 2 seconds
+            showSplash = false
+        }
+
+        if (showSplash) {
+            SplashScreenContent()
+        } else {
+            content()
+        }
+    }
+
+    @Composable
+    fun SplashScreenContent() {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Image(painterResource(R.drawable.recipe), contentDescription = null)
+                    Text(
+                        text = "Recipes",
+                        style = MaterialTheme.typography.displayMedium
+                    )
+                }
+            }
         }
     }
 
@@ -81,18 +125,18 @@ class AuthActivity : ComponentActivity() {
     fun Content(modifier: Modifier) {
         ProjectTheme {
             Surface {
-
                 Box {
-                    val sharedPreferencesHelper = remember { SharedPreferencesHelper(this@AuthActivity) }
+                    val sharedPreferencesHelper =
+                        remember { SharedPreferencesHelper(this@AuthActivity) }
                     AuthSection(modifier)
                     when (viewModel.state.value) {
                         ErrorWhileLogin -> FailedLoginAlert()
                         InitState -> {
-
                             if (sharedPreferencesHelper.getIsFirstLaunched()) {
                                 toRecipeScreenIntension()
                             }
                         }
+
                         SuccessLogin -> {
                             sharedPreferencesHelper.updateIsFirstLaunched()
                             toRecipeScreenIntension()
