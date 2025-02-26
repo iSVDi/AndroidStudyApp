@@ -1,8 +1,6 @@
 package com.example.project.modules.recipesList
 
 import android.content.Intent
-import android.gesture.Gesture
-import androidx.navigation.compose.NavHost
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,18 +20,29 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,19 +50,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.navArgs
 import androidx.room.Room
 import coil3.compose.AsyncImage
 import com.example.project.common.dataBase.RecipeAppDatabase
-import com.example.project.modules.auth.viewModel.AuthViewModel
 import com.example.project.modules.recipeDetails.RecipeDetailsActivity
 import com.example.project.modules.recipesList.models.RecipeCell
 import com.example.project.modules.recipesList.viewModel.RecipesViewModel
 import com.example.project.modules.recipesList.viewModel.RecipesViewState
 import com.example.project.ui.theme.ProjectTheme
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
+data class NavItem(
+    val label: String,
+    val icon: ImageVector,
+    val badgeCount: Int,
+)
 
 class RecipesListActivity : ComponentActivity() {
     private val db by lazy {
@@ -87,23 +98,81 @@ class RecipesListActivity : ComponentActivity() {
     @Composable
     fun MainComposable() {
         ProjectTheme {
+            val navItemList = listOf(
+                NavItem("Recipes", Icons.AutoMirrored.Filled.List, 0),
+                NavItem("Selected Recipes", Icons.Default.Favorite, 5),
+            )
+
+            var selectedIndex by remember {
+                mutableIntStateOf(0)
+            }
+
             Scaffold(
                 topBar = {
                     Text("", modifier = Modifier.padding(top = 20.dp))
+                },
+                bottomBar = {
+                    NavigationBar {
+                        navItemList.forEachIndexed { index, navItem ->
+                            NavigationBarItem(
+                                selected = selectedIndex == index,
+                                onClick = {
+                                    selectedIndex = index
+                                },
+                                icon = {
+                                    BadgedBox(badge = {
+                                        if (navItem.badgeCount > 0)
+                                            Badge() {
+                                                Text(text = navItem.badgeCount.toString())
+                                            }
+                                    }) {
+                                        Icon(
+                                            imageVector = navItem.icon,
+                                            contentDescription = "Icon"
+                                        )
+                                    }
+
+                                },
+                                label = {
+                                    Text(text = navItem.label)
+                                }
+                            )
+                        }
+                    }
                 }
             )
             { paddings ->
-                when (viewModel._state.value) {
-                    is RecipesViewState.Loading -> Loading()
-                    is RecipesViewState.RecipesFetched -> RecipesScroll(
-                        modifier = Modifier.padding(
-                            paddings
-                        )
-                    )
-                }
+                ContentScreen(modifier = Modifier.padding(paddings), selectedIndex)
             }
         }
     }
+
+    @Composable
+    fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int) {
+        when (selectedIndex) {
+            0 -> RecipeScreen(modifier)
+            1 -> SelectedRecipes(Modifier)
+        }
+    }
+
+    @Composable
+    fun SelectedRecipes(modifier: Modifier) {
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("Selected Recipes")
+        }
+    }
+
+    @Composable
+    fun RecipeScreen(modifier: Modifier) {
+        when (viewModel._state.value) {
+            is RecipesViewState.Loading -> Loading()
+            is RecipesViewState.RecipesFetched -> RecipesScroll(
+                modifier = modifier
+            )
+        }
+    }
+
+
 
     @Composable
     fun Loading() {
