@@ -142,10 +142,12 @@ class AuthActivity : ComponentActivity() {
                             toRecipeScreenIntension()
                         }
                     }
+
                 }
             }
         }
     }
+
 
     fun toRecipeScreenIntension() {
         val navigate = Intent(

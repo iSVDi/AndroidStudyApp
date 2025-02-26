@@ -18,13 +18,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
@@ -44,6 +51,8 @@ import com.example.project.modules.recipesList.models.RecipeCell
 import com.example.project.modules.recipesList.viewModel.RecipesViewModel
 import com.example.project.modules.recipesList.viewModel.RecipesViewState
 import com.example.project.ui.theme.ProjectTheme
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 
 class RecipesListActivity : ComponentActivity() {
@@ -114,15 +123,42 @@ class RecipesListActivity : ComponentActivity() {
     @Composable
     fun RecipesScroll(modifier: Modifier) {
         val recipes = (viewModel._state.value as RecipesViewState.RecipesFetched).recipes
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = modifier
-                .padding(horizontal = 10.dp)
-        ) {
-            items(recipes) { recipe ->
-                RecipeCellComposable(recipe = recipe, modifier = Modifier)
+        val coroutineScope = rememberCoroutineScope()
+        val listState = rememberLazyListState()
+        Box(contentAlignment = Alignment.BottomEnd) {
+
+            LazyColumn(
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = modifier
+                    .padding(horizontal = 10.dp)
+            ) {
+                items(recipes) { recipe ->
+                    RecipeCellComposable(recipe = recipe, modifier = Modifier)
+                }
             }
+
+            if (listState.lastScrolledForward) {
+                FloatingActionButton(
+                    modifier = Modifier.padding(bottom = 10.dp, end = 10.dp),
+                    onClick = {
+                        coroutineScope.launch {
+                            listState.scrollToItem(0)
+                        }
+                    },
+                ) {
+                    Icon(Icons.Filled.Add, "Floating action button.")
+                }
+            }
+
+
         }
+
+    }
+
+    @Composable
+    fun FloatingButton(listState: LazyListState) {
+
     }
 
     @Composable
