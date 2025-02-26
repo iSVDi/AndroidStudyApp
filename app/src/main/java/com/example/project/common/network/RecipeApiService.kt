@@ -1,6 +1,5 @@
-package com.example.project.recipesList.network
+package com.example.project.common.network
 
-import com.example.project.recipesList.models.RecipeAnswer
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET

@@ -1,4 +1,4 @@
-package com.example.project.recipesList.models
+package com.example.project.common.network
 
 data class RecipeAnswer(
     val recipes: List<Recipe>,

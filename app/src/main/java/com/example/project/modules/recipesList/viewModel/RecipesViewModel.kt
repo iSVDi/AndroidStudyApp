@@ -1,12 +1,11 @@
-package com.example.project.recipesList.viewModel
+package com.example.project.modules.recipesList.viewModel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.project.R
-import com.example.project.recipesList.models.RecipeCell
-import com.example.project.recipesList.network.RecipesApi
+import com.example.project.modules.recipesList.models.RecipeCell
+import com.example.project.common.network.RecipesApi
 import kotlinx.coroutines.launch
 
 class RecipesViewModel : ViewModel() {

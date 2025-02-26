@@ -1,4 +1,4 @@
-package com.example.project.recipesList
+package com.example.project.modules.recipesList
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -31,9 +31,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.example.project.recipesList.models.RecipeCell
-import com.example.project.recipesList.viewModel.RecipesViewModel
-import com.example.project.recipesList.viewModel.RecipesViewState
+import com.example.project.modules.recipesList.models.RecipeCell
+import com.example.project.modules.recipesList.viewModel.RecipesViewModel
+import com.example.project.modules.recipesList.viewModel.RecipesViewState
 import com.example.project.ui.theme.ProjectTheme
 
 class RecipesListActivity : ComponentActivity() {
@@ -50,6 +50,7 @@ class RecipesListActivity : ComponentActivity() {
     @Composable
     fun MainComposable() {
         ProjectTheme {
+
             Scaffold(
                 topBar = {
                     Text("Top bar", modifier = Modifier.padding(top = 20.dp))

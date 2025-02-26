@@ -1,6 +1,6 @@
-package com.example.project.recipesList.viewModel
+package com.example.project.modules.recipesList.viewModel
 
-import com.example.project.recipesList.models.RecipeCell
+import com.example.project.modules.recipesList.models.RecipeCell
 
 sealed class RecipesViewState {
     object Loading: RecipesViewState()

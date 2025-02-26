@@ -1,9 +1,11 @@
-package com.example.project.auth
+package com.example.project.modules.auth
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,14 +35,42 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
 import com.example.project.R
+import com.example.project.modules.auth.viewModel.AuthViewModel
+import com.example.project.modules.auth.viewModel.AuthViewState.*
+import com.example.project.common.dataBase.RecipeAppDatabase
+import com.example.project.common.SharedPreferencesHelper
+import com.example.project.modules.recipesList.RecipesListActivity
 import com.example.project.ui.theme.ProjectTheme
 
+@Suppress("UNCHECKED_CAST")
 class AuthActivity : ComponentActivity() {
+
+    private val db by lazy {
+        Room.databaseBuilder(
+            applicationContext,
+            RecipeAppDatabase::class.java,
+            "RecipeAppDatabase"
+        ).build()
+    }
+
+    private val viewModel by viewModels<AuthViewModel>(
+        factoryProducer = {
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return AuthViewModel(db.userDataDao) as T
+                }
+            }
+        }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        viewModel.onCreateHandle()
         setContent {
             Content(Modifier.fillMaxSize())
         }
@@ -51,15 +80,41 @@ class AuthActivity : ComponentActivity() {
     fun Content(modifier: Modifier) {
         ProjectTheme {
             Surface {
-                AuthSection(modifier)
+
+                Box {
+                    val sharedPreferencesHelper = remember { SharedPreferencesHelper(this@AuthActivity) }
+                    AuthSection(modifier)
+                    when (viewModel.state.value) {
+                        ErrorWhileLogin -> FailedLoginAlert()
+                        InitState -> {
+
+                            if (sharedPreferencesHelper.getIsFirstLaunched()) {
+                                toRecipeScreenIntension()
+                            }
+                        }
+                        SuccessLogin -> {
+                            sharedPreferencesHelper.updateIsFirstLaunched()
+                            toRecipeScreenIntension()
+                        }
+                    }
+                }
             }
         }
     }
+
+    fun toRecipeScreenIntension() {
+        val navigate = Intent(
+            this@AuthActivity, RecipesListActivity::class.java
+        )
+        startActivity(navigate)
+    }
+
 
     @Composable
     fun AuthSection(modifier: Modifier) {
         var userName by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
+
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -86,39 +141,23 @@ class AuthActivity : ComponentActivity() {
             LoginButton(userName, password)
 
         }
+
     }
 
     @Composable
     fun LoginButton(
         userName: String, password: String,
     ) {
-        val shouldPresentAlert = remember { mutableStateOf(false) }
         Button(onClick = {
-            TODO()
-//            val userData = "$userName,$password"
-//            if (users.value.find {
-//                    it.userName == userData && it.password == password
-//                } != null) {
-//                val navigate = Intent(
-//                    this@AuthActivity, RecipesListActivity::class.java
-//                )
-//                startActivity(navigate)
-//            } else {
-//                shouldPresentAlert.value = true
-//            }
+            viewModel.checkUserBy(userName, password)
         }) {
             Text("Login")
-        }
-        when {
-            shouldPresentAlert.value -> {
-                FailedLoginAlert(shouldPresentAlert)
-            }
         }
     }
 
 
     @Composable
-    fun FailedLoginAlert(state: MutableState<Boolean>) {
+    fun FailedLoginAlert() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -132,7 +171,7 @@ class AuthActivity : ComponentActivity() {
                 Text(text = "User with such userName and password not found")
             }, onDismissRequest = {}, confirmButton = {
                 TextButton(onClick = {
-                    state.value = false
+                    viewModel.handleAlertOkAction()
                 }) { Text("Ok") }
             }
 

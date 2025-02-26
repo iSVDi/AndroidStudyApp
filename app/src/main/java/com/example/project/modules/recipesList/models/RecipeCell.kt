@@ -1,4 +1,4 @@
-package com.example.project.recipesList.models
+package com.example.project.modules.recipesList.models
 
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
