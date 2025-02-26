@@ -57,19 +57,6 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
-    //Room
-//    implementation(libs.androidx.room.runtime)
-//    annotationProcessor(libs.androidx.room.compiler)
-//    implementation(libs.androidx.lifecycle.viewmodel.compose)
-//    implementation(libs.room.ktx)
-//    implementation(libs.androidx.room.common)
-//    implementation(libs.androidx.lifecycle.runtime.ktx.v287)
-//    kapt(libs.artifactid)
-    implementation("androidx.room:room-runtime:2.5.2")
-    implementation("androidx.room:room-ktx:2.5.2")
-    ksp("androidx.room:room-compiler:2.5.2")
-    
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
