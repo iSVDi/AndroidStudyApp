@@ -209,7 +209,7 @@ class RecipesListActivity : ComponentActivity() {
 
             if (listState.lastScrolledForward) {
                 FloatingActionButton(
-                    modifier = Modifier.padding(bottom = 10.dp, end = 10.dp),
+                    modifier = Modifier.padding(bottom = 120.dp, end = 10.dp),
                     onClick = {
                         coroutineScope.launch {
                             listState.scrollToItem(0)

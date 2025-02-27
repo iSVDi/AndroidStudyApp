@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 
 class AuthViewModel(private val userDataDao: UserDataDao) : ViewModel() {
     val state = mutableStateOf<AuthViewState>(AuthViewState.InitState)
+    val isNeedAnimated = mutableStateOf<Boolean>(true)
 
     fun onCreateHandle() {
         insertUserDatasIfNeed()

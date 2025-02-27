@@ -77,9 +77,16 @@ class AuthActivity : ComponentActivity() {
         enableEdgeToEdge()
         viewModel.onCreateHandle()
         setContent {
-            SplashScreenApp {
+
+            if (viewModel.isNeedAnimated.value) {
+                SplashScreenApp {
+                    Content(Modifier.fillMaxSize())
+                }
+                viewModel.isNeedAnimated.value = false
+            } else {
                 Content(Modifier.fillMaxSize())
             }
+
         }
     }
 
