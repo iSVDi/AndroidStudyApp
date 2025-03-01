@@ -77,16 +77,9 @@ class AuthActivity : ComponentActivity() {
         enableEdgeToEdge()
         viewModel.onCreateHandle()
         setContent {
-
-            if (viewModel.isNeedAnimated.value) {
-                SplashScreenApp {
-                    Content(Modifier.fillMaxSize())
-                }
-                viewModel.isNeedAnimated.value = false
-            } else {
+            SplashScreenApp {
                 Content(Modifier.fillMaxSize())
             }
-
         }
     }
 
@@ -135,12 +128,13 @@ class AuthActivity : ComponentActivity() {
                 Box {
                     val sharedPreferencesHelper =
                         remember { SharedPreferencesHelper(this@AuthActivity) }
-                    AuthSection(modifier)
                     when (viewModel.state.value) {
                         ErrorWhileLogin -> FailedLoginAlert()
                         InitState -> {
                             if (sharedPreferencesHelper.getIsFirstLaunched()) {
                                 toRecipeScreenIntension()
+                            } else {
+                                AuthSection(modifier)
                             }
                         }
 
@@ -149,7 +143,6 @@ class AuthActivity : ComponentActivity() {
                             toRecipeScreenIntension()
                         }
                     }
-
                 }
             }
         }

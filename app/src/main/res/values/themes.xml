@@ -11,6 +11,7 @@
 
         <!-- Post-splash screen theme (e.g., your app's main theme) -->
         <item name="postSplashScreenTheme">@style/Theme.Project</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
 </resources>
